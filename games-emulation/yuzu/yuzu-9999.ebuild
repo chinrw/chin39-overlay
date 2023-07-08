@@ -127,7 +127,7 @@ src_prepare() {
 	sed -i '/^if.*cubeb/,/^endif()/d' externals/CMakeLists.txt || die
 
 	# Unbundle cpp-httplib
-	sed -i -e '/httplib/s/ 0.11//' CMakeLists.txt || die
+	sed -i -e '/httplib/s/ 0.12//' CMakeLists.txt || die
 	sed -i -e '/^# httplib/,/^endif()/d' externals/CMakeLists.txt || die
 
 	# Unbundle enet
@@ -163,7 +163,7 @@ src_configure() {
 		-DSIRIT_USE_SYSTEM_SPIRV_HEADERS=yes
 		-DUSE_DISCORD_PRESENCE=$(usex discord)
 		-DYUZU_TESTS=$(usex test)
-		-DYUZU_USE_EXTERNAL_VULKAN_HEADERS=$(use system-vulkan no yes)
+		-DYUZU_USE_EXTERNAL_VULKAN_HEADERS=$(usex system-vulkan no yes)
 		-DYUZU_USE_EXTERNAL_SDL2=OFF
 		-DYUZU_USE_QT_WEB_ENGINE=$(usex webengine)
 	)
