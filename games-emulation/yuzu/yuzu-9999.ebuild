@@ -8,7 +8,7 @@ inherit cmake git-r3 toolchain-funcs xdg
 DESCRIPTION="An emulator for Nintendo Switch"
 HOMEPAGE="https://yuzu-emu.org"
 EGIT_REPO_URI="https://github.com/yuzu-emu/yuzu-mainline"
-EGIT_SUBMODULES=( '-*' 'dynarmic' 'sirit' 'xbyak' 'tzdb_to_nx' 'externals/nx_tzdb/tzdb_to_nx/externals/tz/tz' 'VulkanMemoryAllocator' )
+EGIT_SUBMODULES=( '-*' 'dynarmic' 'sirit' 'xbyak' 'tzdb_to_nx' 'externals/nx_tzdb/tzdb_to_nx/externals/tz/tz' 'VulkanMemoryAllocator' 'mbedtls' 'mbedcrypto' )
 # Dynarmic is not intended to be generic, it is tweaked to fit emulated processor
 # TODO wait 'xbyak' waiting version bump. see #860816
 
@@ -102,10 +102,10 @@ src_prepare() {
 	sed -i -e 's:inih/cpp/::' src/yuzu_cmd/config.cpp || die
 
 	# Unbundle mbedtls
-	sed -i -e '/mbedtls/d' externals/CMakeLists.txt || die
-	sed -i -e 's/mbedtls/& mbedcrypto mbedx509/' \
-		src/dedicated_room/CMakeLists.txt \
-		src/core/CMakeLists.txt || die
+	# sed -i -e '/mbedtls/d' externals/CMakeLists.txt || die
+	# sed -i -e 's/mbedtls/& mbedcrypto mbedx509/' \
+	# 	src/dedicated_room/CMakeLists.txt \
+	# 	src/core/CMakeLists.txt || die
 
 	# Workaround: GenerateSCMRev fails
 	sed -i -e "s/@GIT_BRANCH@/${EGIT_BRANCH:-master}/" \
