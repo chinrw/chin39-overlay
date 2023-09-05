@@ -1,1 +1,1 @@
-# chin39_repo
+# Personal Gentoo overlay
