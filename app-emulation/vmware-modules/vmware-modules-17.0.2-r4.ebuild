@@ -34,9 +34,9 @@ RESTRICT="mirror"
 
 S="${WORKDIR}/vmware-host-modules-${MY_COMMIT}"
 
-PATCHES=(
-	"${FILESDIR}/vmware-modules-16.2.5-kernel-6.4.10.patch"
-)
+# PATCHES=(
+# 	"${FILESDIR}/vmware-modules-16.2.5-kernel-6.4.10.patch"
+# )
 
 pkg_setup() {
 	CONFIG_CHECK="~HIGH_RES_TIMERS"
