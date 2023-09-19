@@ -14,6 +14,7 @@ HOMEPAGE="https://neovim.io"
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/neovim/neovim.git"
+	EGIT_COMMIT="6405fa4b117263b92f87b17150abd2d1c6ab5881"
 else
 	SRC_URI="https://github.com/neovim/neovim/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~x64-macos"
@@ -23,10 +24,9 @@ LICENSE="Apache-2.0 vim"
 SLOT="0"
 IUSE="+lto +nvimpager test"
 
-REQUIRED_USE="${LUA_REQUIRED_USE}"
 # Upstream say the test library needs LuaJIT
 # https://github.com/neovim/neovim/blob/91109ffda23d0ce61cec245b1f4ffb99e7591b62/CMakeLists.txt#L377
-REQUIRED_USE="test? ( lua_single_target_luajit )"
+REQUIRED_USE="${LUA_REQUIRED_USE} test? ( lua_single_target_luajit )"
 # TODO: Get tests running
 RESTRICT="!test? ( test ) test"
 
@@ -82,6 +82,7 @@ src_prepare() {
 }
 
 src_configure() {
+	ln -s "${BROOT}"/usr/bin/luajit "${BUILD_DIR}"/luajit || die
 	# Upstream default to LTO on non-debug builds
 	# Let's expose it as a USE flag because upstream
 	# have preferences for how we should use LTO
@@ -91,7 +92,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DENABLE_LTO=$(usex lto)
 		-DPREFER_LUA=$(usex lua_single_target_luajit no "$(lua_get_version)")
-		-DLUA_PRG="${LUA}"
+		-DLUA_PRG="${ELUA}"
 	)
 	cmake_src_configure
 }
