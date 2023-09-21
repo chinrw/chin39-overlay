@@ -12,9 +12,9 @@ HOMEPAGE="https://github.com/hyprwm/Hyprland/releases"
 inherit git-r3
 EGIT_REPO_URI="https://github.com/hyprwm/${PN^}.git"
 
-KEYWORDS="~amd64"
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS=""
 IUSE="X legacy-renderer systemd contrib"
 
 RDEPEND="
@@ -56,8 +56,8 @@ BDEPEND="
 "
 
 src_prepare() {
-	STDLIBVER=$(echo '#include <string>' | $(tc-getCXX) -x c++ -dM -E - | \
-					grep GLIBCXX_RELEASE | sed 's/.*\([1-9][0-9]\)/\1/')
+	STDLIBVER=$(echo '#include <string>' | $(tc-getCXX) -x c++ -dM -E - |
+		grep GLIBCXX_RELEASE | sed 's/.*\([1-9][0-9]\)/\1/')
 	if ! [[ ${STDLIBVER} -ge 12 ]]; then
 		die "Hyprland requires >=sys-devel/gcc-12.1.0 to build"
 	fi
