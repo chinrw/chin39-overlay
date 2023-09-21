@@ -14,7 +14,7 @@ HOMEPAGE="https://neovim.io"
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/neovim/neovim.git"
-	EGIT_COMMIT="0aea8fad48ccd891022a5595fc7cdedbe4c04ad3"
+	EGIT_COMMIT="nightly"
 else
 	SRC_URI="https://github.com/neovim/neovim/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~x64-macos"
