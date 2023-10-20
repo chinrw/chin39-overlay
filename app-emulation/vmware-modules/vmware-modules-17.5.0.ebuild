@@ -11,7 +11,7 @@ HOMEPAGE="https://github.com/mkubecek/vmware-host-modules"
 # Highest kernel version known to work:
 MY_KERNEL_VERSION="6.5"
 
-# Upstream does not want to tag versions or anything that looks like properly
+# Upstream doesn't want to tag versions or anything that looks like properly
 # releasing the software, so we need to just pick a commit from
 # https://github.com/mkubecek/vmware-host-modules/commits/workstation-${PV}
 # and test it ourselves.
@@ -48,6 +48,18 @@ pkg_setup() {
 		ewarn
 	fi
 
+	if linux_chkconfig_present CC_IS_CLANG; then
+		: "${KERNEL_CC:=${CHOST}-clang}"
+		if linux_chkconfig_present LD_IS_LLD; then
+			: "${KERNEL_LD:=ld.lld}"
+			if linux_chkconfig_present LTO_CLANG_THIN; then
+				BUILD_PARAMS+=" ldflags-y=--thinlto-cache-dir= LDFLAGS_MODULE=--thinlto-cache-dir="
+			fi
+		fi
+	fi
+
+	BUILD_PARAMS+=" ${KERNEL_CC:+CC=${KERNEL_CC}} ${KERNEL_LD:+LD=${KERNEL_LD}}"
+
 	VMWARE_GROUP=${VMWARE_GROUP:-vmware}
 
 	VMWARE_MODULE_LIST="vmmon vmnet"
@@ -59,7 +71,7 @@ pkg_setup() {
 	enewgroup "${VMWARE_GROUP}"
 
 	filter-flags -mfpmath=sse -mavx -mpclmul -maes
-	append-cflags -mno-sse  # Found a problem similar to bug #492964
+	append-cflags -mno-sse # Found a problem similar to bug #492964
 
 	for mod in ${VMWARE_MODULE_LIST}; do
 		MODULE_NAMES="${MODULE_NAMES} ${mod}(misc:${S}/${mod}-only)"
@@ -80,7 +92,7 @@ src_prepare() {
 src_install() {
 	linux-mod_src_install
 	local udevrules="${T}/60-vmware.rules"
-	cat > "${udevrules}" <<-EOF
+	cat >"${udevrules}" <<-EOF
 		KERNEL=="vmci",  GROUP="vmware", MODE="660"
 		KERNEL=="vmw_vmci",  GROUP="vmware", MODE="660"
 		KERNEL=="vmmon", GROUP="vmware", MODE="660"
@@ -90,16 +102,16 @@ src_install() {
 
 	dodir /etc/modprobe.d/
 
-	cat > "${D}"/etc/modprobe.d/vmware.conf <<-EOF
+	cat >"${D}"/etc/modprobe.d/vmware.conf <<-EOF
 		# Support for vmware vmci in kernel module
-		alias vmci	vmw_vmci
+		alias vmci vmw_vmci
 	EOF
 
 	export installed_modprobe_conf=1
 	dodir /etc/modprobe.d/
-	cat >> "${D}"/etc/modprobe.d/vmware.conf <<-EOF
+	cat >>"${D}"/etc/modprobe.d/vmware.conf <<-EOF
 		# Support for vmware vsock in kernel module
-		alias vsock	vmw_vsock_vmci_transport
+		alias vsock vmw_vsock_vmci_transport
 	EOF
 
 	export installed_modprobe_conf=1
