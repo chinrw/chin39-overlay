@@ -9,25 +9,21 @@ DESCRIPTION="VMware kernel modules"
 HOMEPAGE="https://github.com/mkubecek/vmware-host-modules"
 
 # Highest kernel version known to work:
-MY_KERNEL_VERSION="6.3"
+MY_KERNEL_VERSION="6.5"
 
-# Upstream doesn't want to tag versions or anything that looks like properly
+# Upstream does not want to tag versions or anything that looks like properly
 # releasing the software, so we need to just pick a commit from
 # https://github.com/mkubecek/vmware-host-modules/commits/workstation-${PV}
 # and test it ourselves.
 #
 # Details: https://github.com/mkubecek/vmware-host-modules/issues/158#issuecomment-1228341760
-MY_COMMIT="650fb3abeb82f2b7d3a14f9579a7529d153636b7"
+MY_COMMIT="f29c1d7df4a26417a06c7bf1dd4ea43e013668dc"
 
 SRC_URI=" https://github.com/mkubecek/vmware-host-modules/archive/${MY_COMMIT}.tar.gz -> ${P}-${MY_COMMIT}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE=""
-
-RDEPEND=""
-DEPEND=""
 
 RESTRICT="mirror"
 
@@ -41,7 +37,7 @@ pkg_setup() {
 	if kernel_is -ge 2 6 37 && kernel_is -lt 2 6 39; then
 		CONFIG_CHECK="${CONFIG_CHECK} BKL"
 	fi
-	CONFIG_CHECK="${CONFIG_CHECK} VMWARE_VMCI VMWARE_VMCI_VSOCKETS"
+	CONFIG_CHECK="${CONFIG_CHECK} VMWARE_VMCI ~VMWARE_VMCI_VSOCKETS"
 
 	linux-info_pkg_setup
 	linux-mod_pkg_setup
@@ -51,18 +47,6 @@ pkg_setup() {
 		ewarn "Warning: this version of the modules is only known to work with kernels up to ${MY_KERNEL_VERSION}, while you are building them for a ${KV_FULL} kernel."
 		ewarn
 	fi
-
-  if linux_chkconfig_present CC_IS_CLANG; then
-		: "${KERNEL_CC:=${CHOST}-clang}"
-		if linux_chkconfig_present LD_IS_LLD; then
-			: "${KERNEL_LD:=ld.lld}"
-			if linux_chkconfig_present LTO_CLANG_THIN; then
-				BUILD_PARAMS+=" ldflags-y=--thinlto-cache-dir= LDFLAGS_MODULE=--thinlto-cache-dir="
-			fi
-		fi
-	fi
-
-	BUILD_PARAMS+=" ${KERNEL_CC:+CC=${KERNEL_CC}} ${KERNEL_LD:+LD=${KERNEL_LD}}"
 
 	VMWARE_GROUP=${VMWARE_GROUP:-vmware}
 
