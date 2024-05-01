@@ -482,7 +482,6 @@ IUSE="test"
 RESTRICT="!test? ( test )"
 
 DEPEND="app-arch/zstd:=
-	>=dev-libs/libgit2-1.7.1
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
